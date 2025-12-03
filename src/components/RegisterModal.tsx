@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, CheckCircle } from "lucide-react";
+import CanastaBio from "../assets/canastabio.png";
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -19,8 +20,15 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
     setLoading(true);
 
     const data = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(data.entries());
-    console.log("Datos del formulario:", payload);
+    const payload: any = Object.fromEntries(data.entries());
+
+    // Validación rápida en frontend para el DNI
+    const dni = String(payload.dni || "").trim();
+    if (!/^\d{8}$/.test(dni)) {
+      setLoading(false);
+      setErrorMsg("El DNI debe tener exactamente 8 dígitos numéricos");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:4000/api/registrations", {
@@ -104,6 +112,18 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
 
                 {/* FORMULARIO */}
                 <form onSubmit={handleSubmit} className="space-y-3">
+                  {/* DNI */}
+                  <input
+                    name="dni"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d{8}"
+                    maxLength={8}
+                    required
+                    placeholder="DNI (8 dígitos)"
+                    className="w-full rounded-md border border-emerald-200 bg-white/95 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  />
+
                   <input
                     name="nombre"
                     type="text"
@@ -130,7 +150,7 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                   <input
                     name="mobile"
                     type="number"
-                    placeholder="mobile"
+                    placeholder="Mobile"
                     className="w-full rounded-md border border-emerald-200 bg-white/95 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
 
@@ -162,10 +182,11 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         {/* PANEL DERECHO */}
         <div className="relative hidden md:block bg-amber-50">
           <img
-            src="https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=800&q=80"
-            alt="Canasta navideña"
+            src={CanastaBio}
+            alt="Canasta BioSelva"
             className="w-full h-full object-cover"
           />
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
         </div>
       </div>

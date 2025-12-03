@@ -1,5 +1,15 @@
 import { Facebook, Instagram, Mail, Leaf } from "lucide-react";
-
+const TikTok = () => (
+  <svg
+    width="28"
+    height="28"
+    viewBox="0 0 256 256"
+    fill="currentColor"
+    className="hover:scale-110 transition"
+  >
+    <path d="M216 79.7c-22.1 0-40.2-18-40.2-40.2V24h-32v128a32 32 0 11-32-32h8V88h-8a64 64 0 1064 64V87.4a72.2 72.2 0 0040.2 12.3V79.7z" />
+  </svg>
+);
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16">
@@ -13,8 +23,7 @@ export default function Footer() {
             </div>
 
             <p className="text-gray-400 leading-relaxed">
-              Productos naturales de coco premium para una vida más saludable y
-              sostenible.
+              Productos naturales para una vida más saludable y sostenible.
             </p>
           </div>
 
@@ -23,25 +32,34 @@ export default function Footer() {
             <h3 className="text-xl font-bold mb-4">Síguenos</h3>
 
             <div className="flex gap-4">
+              {/* Facebook */}
               <a
-                href="#"
+                href="https://www.facebook.com/BioselvaPeru/?locale=es_LA"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 bg-white/10 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
                 <Facebook className="w-6 h-6" />
               </a>
 
+              {/* Instagram */}
               <a
-                href="#"
+                href="https://www.instagram.com/bioselva/?hl=es"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 bg-white/10 hover:bg-pink-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
                 <Instagram className="w-6 h-6" />
               </a>
 
+              {/* TikTok (antes Mail) */}
               <a
-                href="#"
-                className="w-12 h-12 bg-white/10 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                href="https://www.tiktok.com/@bioselvaessentials"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 bg-white/10 hover:bg-black rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
-                <Mail className="w-6 h-6" />
+                <TikTok className="w-6 h-6" />
               </a>
             </div>
           </div>
@@ -66,9 +84,9 @@ export default function Footer() {
 
         {/* Línea inferior */}
         <div className="border-t border-gray-700 pt-8 text-center text-gray-400">
-          <p>© 2024 Bioselva Essentials. Todos los derechos reservados.</p>
+          <p>© 2025 Bioselva Essentials. Todos los derechos reservados.</p>
           <p className="mt-2 text-sm">
-            Sorteo válido del 1 al 20 de diciembre de 2024
+            Sorteo válido del 7 al 20 de diciembre de 2025
           </p>
         </div>
       </div>

@@ -90,9 +90,32 @@ export default function Steps({ onRegisterClick }: StepsProps) {
                       Síguenos en nuestras redes
                     </p>
                     <div className="flex items-center justify-center gap-6">
-                      <Facebook className="w-8 h-8 text-blue-600 hover:scale-110 transition" />
-                      <Instagram className="w-8 h-8 text-pink-500 hover:scale-110 transition" />
-                      <TikTok />
+                      <a
+                        href="https://www.facebook.com/BioselvaPeru/?locale=es_LA"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <Facebook className="w-8 h-8 text-blue-600" />
+                      </a>
+
+                      <a
+                        href="https://www.instagram.com/bioselva/?hl=es"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <Instagram className="w-8 h-8 text-pink-500" />
+                      </a>
+
+                      <a
+                        href="https://www.tiktok.com/@bioselvaessentials"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:scale-110 transition"
+                      >
+                        <TikTok className="w-8 h-8 text-white" />
+                      </a>
                     </div>
                   </div>
                 ) : (

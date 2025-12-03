@@ -19,6 +19,7 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS raffle_registrations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      dni TEXT NOT NULL UNIQUE,
       nombre TEXT NOT NULL,
       edad INTEGER,
       correo TEXT NOT NULL,
@@ -33,39 +34,67 @@ db.serialize(() => {
 
 // Registrar un participante
 app.post("/api/registrations", (req, res) => {
-  const { nombre, edad, correo, mobile, distrito } = req.body;
+  const { dni, nombre, edad, correo, mobile, distrito } = req.body;
 
-  if (!nombre || !correo) {
+  if (!dni || !nombre || !correo) {
     return res
       .status(400)
-      .json({ error: "Nombre y correo son obligatorios" });
+      .json({ error: "DNI, nombre y correo son obligatorios" });
   }
 
-  const query = `
-    INSERT INTO raffle_registrations (nombre, edad, correo, mobile, distrito)
-    VALUES (?, ?, ?, ?, ?)
-  `;
+  // Validar que el DNI tenga exactamente 8 dígitos numéricos
+  const dniStr = String(dni).trim();
+  if (!/^\d{8}$/.test(dniStr)) {
+    return res
+      .status(400)
+      .json({ error: "El DNI debe tener exactamente 8 dígitos numéricos" });
+  }
 
-  db.run(
-    query,
-    [nombre, edad || null, correo, mobile || null, distrito || null],
-    function (err) {
+  // Verificar si ya existe un registro con ese DNI
+  db.get(
+    "SELECT id FROM raffle_registrations WHERE dni = ? LIMIT 1",
+    [dniStr],
+    (err, row) => {
       if (err) {
-        console.error("Error al insertar registro:", err);
-        return res
-          .status(500)
-          .json({ error: "Error al guardar el registro" });
+        console.error("Error al buscar DNI:", err);
+        return res.status(500).json({ error: "Error al validar el DNI" });
       }
 
-      return res.status(201).json({
-        message: "Registro exitoso",
-        id: this.lastID,
-      });
+      if (row) {
+        // Ya hay alguien con ese DNI
+        return res
+          .status(409)
+          .json({ error: "Documento ya registrado" });
+      }
+
+      // Si no existe, insertar nuevo registro
+      const query = `
+        INSERT INTO raffle_registrations (dni, nombre, edad, correo, mobile, distrito)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      db.run(
+        query,
+        [dniStr, nombre, edad || null, correo, mobile || null, distrito || null],
+        function (err2) {
+          if (err2) {
+            console.error("Error al insertar registro:", err2);
+            return res
+              .status(500)
+              .json({ error: "Error al guardar el registro" });
+          }
+
+          return res.status(201).json({
+            message: "Registro exitoso",
+            id: this.lastID,
+          });
+        }
+      );
     }
   );
 });
 
-// Obtener cantidad total de registros
+// Total de inscritos
 app.get("/api/registrations/count", (req, res) => {
   db.get("SELECT COUNT(*) as total FROM raffle_registrations", [], (err, row) => {
     if (err) {
@@ -74,14 +103,14 @@ app.get("/api/registrations/count", (req, res) => {
         .status(500)
         .json({ error: "Error al obtener el conteo" });
     }
-    return res.json({ total: row.total });
+    res.json({ total: row.total });
   });
 });
 
-// (Opcional) Listar todos los registros
+// Listar inscritos
 app.get("/api/registrations", (req, res) => {
   db.all(
-    "SELECT id, nombre, edad, correo, mobile, distrito, created_at FROM raffle_registrations ORDER BY created_at DESC",
+    "SELECT id, dni, nombre, edad, correo, mobile, distrito, created_at FROM raffle_registrations ORDER BY created_at DESC",
     [],
     (err, rows) => {
       if (err) {
@@ -90,7 +119,7 @@ app.get("/api/registrations", (req, res) => {
           .status(500)
           .json({ error: "Error al obtener registros" });
       }
-      return res.json(rows);
+      res.json(rows);
     }
   );
 });

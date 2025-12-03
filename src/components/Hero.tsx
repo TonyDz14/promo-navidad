@@ -1,12 +1,10 @@
-import { Gift, Sparkles } from "lucide-react";
-
 interface HeroProps {
   onRegisterClick: () => void;
 }
 
 export default function Hero({ onRegisterClick }: HeroProps) {
   return (
-    <section className="relative py-24 bg-transparent">
+    <section className="py-24">
       {/* CONTENIDO */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         {/* Badge reemplazado por el logo */}
