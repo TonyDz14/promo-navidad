@@ -1,0 +1,9 @@
+/* Fondo global para toda la página */
+body {
+  background-image: url('/src/assets/canasta.jpg');
+  background-size: cover;        /* La imagen cubre toda la pantalla */
+  background-position: center;   /* Centrada */
+  background-attachment: fixed;  /* NO se mueve al hacer scroll (efecto Apple) */
+  background-repeat: no-repeat;  /* No se repite */
+  background-color: #ffffff;     /* Por si la imagen carga lento */
+}

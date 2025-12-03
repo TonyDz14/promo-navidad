@@ -6,9 +6,62 @@
 
     <!-- Tailwind desde CDN (oficial) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      /* ===== ANIMACIÓN (tu código existente) ===== */
+      @keyframes scroll-left {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      .scroll-animate {
+        animation: scroll-left 35s linear infinite;
+      }
+
+      .scroll-animate:hover {
+        animation-play-state: paused;
+      }
+
+      /* ===== VIDEO DE FONDO ===== */
+      #bg-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;     /* El video se adapta como background */
+        z-index: -1;           /* Detrás de TODO */
+        pointer-events: none;  /* No bloquea clics */
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff;   /* Color fallback */
+        overflow-x: hidden;
+      }
+    </style>
   </head>
+
   <body>
+
+    <!-- ===========================
+         VIDEO DE FONDO GLOBAL
+         =========================== -->
+    <video autoplay muted loop playsinline id="bg-video">
+      <source src="/src/assets/arbol.mp4" type="video/mp4" />
+      Tu navegador no soporta videos HTML5.
+    </video>
+
+    <!-- React Root -->
     <div id="root"></div>
+
+    <!-- Script principal -->
     <script type="module" src="/src/main.jsx"></script>
+
   </body>
 </html>

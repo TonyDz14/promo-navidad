@@ -8,22 +8,51 @@ interface RegisterModalProps {
 
 export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setLoading(true);
+
     const data = new FormData(e.currentTarget);
-    console.log("Datos del formulario:", Object.fromEntries(data.entries()));
+    const payload = Object.fromEntries(data.entries());
+    console.log("Datos del formulario:", payload);
 
-    // MOSTRAR MENSAJE DE ÉXITO
-    setSuccess(true);
+    try {
+      const response = await fetch("http://localhost:4000/api/registrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    // Cerrar modal después de 2.3 segundos
-    setTimeout(() => {
-      setSuccess(false);
-      onClose();
-    }, 2300);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Error al registrar");
+      }
+
+      // MOSTRAR MENSAJE DE ÉXITO
+      setSuccess(true);
+
+      // Limpiar el formulario
+      (e.currentTarget as HTMLFormElement).reset();
+
+      // Cerrar modal después de 2.3 segundos
+      setTimeout(() => {
+        setSuccess(false);
+        onClose();
+      }, 2300);
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || "Ocurrió un error al registrar");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,20 +60,16 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative z-10 w-full max-w-4xl mx-4 bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
-
         {/* PANEL IZQUIERDO */}
         <div className="bg-emerald-600 text-white p-6 md:p-8 flex flex-col justify-between">
-
           {/* SI HAY ÉXITO: Mostrar mensaje motivador */}
           {success ? (
             <div className="flex flex-col items-center justify-center text-center py-20 animate-fade-in">
               <CheckCircle className="w-16 h-16 text-amber-300 mb-4 animate-bounce" />
-              <h2 className="text-2xl font-bold mb-2">
-                ¡Registro exitoso! 
-              </h2>
+              <h2 className="text-2xl font-bold mb-2">¡Registro exitoso!</h2>
               <p className="text-emerald-100">
-                Gracias por participar.  
-                ¡Que la magia de la navidad llegue a tu mesa! 
+                Gracias por participar. ¡Que la magia de la navidad llegue a tu
+                mesa!
               </p>
             </div>
           ) : (
@@ -70,6 +95,13 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                   Completa tus datos y participa por la canasta navideña.
                 </p>
 
+                {/* Mensaje de error si algo falla */}
+                {errorMsg && (
+                  <p className="mb-3 text-xs bg-red-500/20 border border-red-300 text-red-100 rounded px-2 py-1">
+                    {errorMsg}
+                  </p>
+                )}
+
                 {/* FORMULARIO */}
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <input
@@ -94,12 +126,14 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
                     placeholder="Correo electrónico"
                     className="w-full rounded-md border border-emerald-200 bg-white/95 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
-                 <input
+
+                  <input
                     name="mobile"
                     type="number"
                     placeholder="mobile"
                     className="w-full rounded-md border border-emerald-200 bg-white/95 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
+
                   <input
                     name="distrito"
                     type="text"
@@ -109,15 +143,17 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
 
                   <button
                     type="submit"
-                    className="mt-3 w-full rounded-full bg-amber-400 text-emerald-900 font-bold py-2.5 text-sm shadow-md hover:bg-amber-500 transition"
+                    disabled={loading}
+                    className="mt-3 w-full rounded-full bg-amber-400 text-emerald-900 font-bold py-2.5 text-sm shadow-md hover:bg-amber-500 transition disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    Regístrate
+                    {loading ? "Registrando..." : "Regístrate"}
                   </button>
                 </form>
               </div>
 
               <p className="mt-4 text-[11px] text-emerald-100">
-                Al registrarte aceptas las bases del sorteo y nuestras políticas de privacidad.
+                Al registrarte aceptas las bases del sorteo y nuestras políticas
+                de privacidad.
               </p>
             </>
           )}
